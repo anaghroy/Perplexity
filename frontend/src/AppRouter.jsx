@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router";
 import { AnimatePresence } from "motion/react";
 import Login from "./features/auth/pages/Login";
-import Register from "./features/auth/pages/Register"
+import Register from "./features/auth/pages/Register";
+import VerifyEmail from "./features/auth/pages/VerifyEmail";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -13,6 +14,7 @@ const AnimatedRoutes = () => {
             <Routes location={location} key={location.pathname}>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
             </Routes>
         </AnimatePresence>
     );
