@@ -1,9 +1,20 @@
-import {Router} from "express"
-import { register, verifyEmail, login, getMe, logout } from "../controllers/auth.controller.js"
-import {registerValidator, loginValidator} from "../validators/auth.validator.js"
-import {authUser} from "../middleware/auth.middleware.js"
+import { Router } from "express";
+import {
+  register,
+  verifyEmail,
+  login,
+  getMe,
+  logout,
+  resendVerificationEmail,
+  googleAuth,
+} from "../controllers/auth.controller.js";
+import {
+  registerValidator,
+  loginValidator,
+} from "../validators/auth.validator.js";
+import { authUser } from "../middleware/auth.middleware.js";
 
-const authRouter = Router()
+const authRouter = Router();
 
 /**
  * @route POST /api/auth/register
@@ -20,13 +31,13 @@ authRouter.post("/register", registerValidator, register);
  * @access Public
  * @body { email, password }
  */
-authRouter.post("/login", loginValidator, login)
+authRouter.post("/login", loginValidator, login);
 /**
  * @route GET /api/auth/get-me
  * @desc Get current logged in user's details
  * @access Private
  */
-authRouter.get('/get-me', authUser, getMe)
+authRouter.get("/get-me", authUser, getMe);
 
 /**
  * @route GET /api/auth/verify-email
@@ -34,7 +45,23 @@ authRouter.get('/get-me', authUser, getMe)
  * @access Public
  * @query { token }
  */
-authRouter.get('/verify-email', verifyEmail)
+authRouter.get("/verify-email", verifyEmail);
+
+/**
+ * @route POST /api/auth/resend-verification
+ * @desc Resend verification email
+ * @access Public
+ * @body { email }
+ */
+authRouter.post("/resend-verification", resendVerificationEmail);
+
+/**
+ * @route POST /api/auth/google
+ * @desc Google authentication
+ * @access Public
+ * @body { token }
+ */
+authRouter.post("/google", googleAuth);
 
 /**
  * @route POST /api/auth/logout

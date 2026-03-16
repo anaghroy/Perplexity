@@ -1,0 +1,204 @@
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  height: 100vh;
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem 1rem;
+  color: var(--text-primary);
+
+  .sidebar-top {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: hidden;
+    height: 100%;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+
+    .brand-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0.5rem;
+      border-radius: 0.5rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: var(--hover-bg);
+        color: var(--text-primary);
+      }
+
+      &.active {
+        background-color: var(--hover-bg);
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .new-thread-container {
+    padding: 0 0.5rem;
+  }
+
+  .new-thread-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .shortcut {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      background-color: var(--hover-bg);
+      padding: 0.1rem 0.4rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border-color);
+    }
+  }
+
+  .history-section {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.5rem;
+    padding: 0 0.5rem;
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .thread-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .thread-item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: none;
+      background: none;
+      border-radius: 0.375rem;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &:hover {
+        background-color: var(--hover-bg);
+        color: var(--text-primary);
+      }
+
+      .thread-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .sidebar-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-top: 1rem;
+    margin-top: auto;
+
+    .bottom-link {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      border: none;
+      background: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      background-color: transparent;
+
+      &:hover {
+        background-color: var(--hover-bg);
+        color: var(--text-primary);
+      }
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: var(--hover-bg);
+      }
+
+      .avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background-color: var(--border-color);
+      }
+
+      .user-name {
+        font-size: 0.9rem;
+        font-weight: 500;
+        flex: 1;
+      }
+
+      .dropdown-icon {
+        color: var(--text-secondary);
+      }
+    }
+  }
+}

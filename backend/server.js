@@ -1,20 +1,19 @@
-import "dotenv/config"
-import app from "./src/app.js"
-import connectDB from "./src/config/database.js"
-import {  testGeminiAI,testMistralAI,testchatgroqAI } from "./src/services/ai.service.js"
+import "dotenv/config";
+import {createServer} from "http"
+import app from "./src/app.js";
+import connectDB from "./src/config/database.js";
+import { initSocket } from "./src/sockets/server.socket.js";
 
-const PORT = process.env.PORT || 8000
+const PORT = process.env.PORT || 3000;
 
- testGeminiAI()
-testMistralAI()
-testchatgroqAI()
+connectDB().catch((err) => {
+  console.error("MongoDB connection failed:", err);
+  process.exit(1);
+});
 
-connectDB()
-.catch((err)=>{
-    console.error("MongoDB connection failed:", err)
-    process.exit(1)
-})
+const httpServer = createServer(app);
+initSocket(httpServer);
 
-app.listen(PORT, ()=>{
-    console.log(`Server running on port: ${PORT}`)
-})
+httpServer.listen(PORT, () => {
+  console.log(`Server running on port: ${PORT}`);
+});

@@ -2,8 +2,29 @@
 @use "../styles/fonts/typography";
 @use "../styles/colors/variables";
 
-/*layout*/
-@use "../styles/layouts/register";
-@use "../styles/layouts/login";
-@use "../styles/layouts/verifyEmail";
+/*pages*/
+@use "../styles/pages/register";
+@use "../styles/pages/login";
+@use "../styles/pages/verifyEmail";
+@use "../styles/pages/home";
+@use "../styles/pages/library";
+@use "../styles/pages/settings";
+@use "../styles/pages/discover";
+
+/*layouts*/
+@use "../styles/layouts/sidebar";
+@use "../styles/layouts/header";
+@use "../styles/layouts/chat";
+@use "../styles/layouts/search";
+@use "../styles/layouts/rightSidebar";
+@use "../styles/layouts/grid";
+
+/*Components*/
+@use "../styles/components/buttons";
+@use "../styles/components/cards";
+@use "../styles/components/promptCard";
+@use "../styles/components/chatMessage";
+@use "../styles/components/answerCard";
+
+
 @use "../styles/layouts/responsive";

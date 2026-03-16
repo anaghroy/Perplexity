@@ -1,161 +1,110 @@
-/* Responsive Styles for Auth Pages */
+// Breakpoints
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
 
-/* Tablet (max-width: 1024px) */
-@media (max-width: 1024px) {
-  .login-container, .register-container, .verify-email-container {
-    max-width: 400px;
-    padding: 2rem;
-  }
+/* =========================================
+   Responsive Layout Overrides
+   ========================================= */
 
-  .login-page::before, .register-page::before {
-    width: 300px;
-    height: 300px;
-    top: -50px;
-    left: -50px;
-  }
-
-  .login-page::after, .register-page::after {
-    width: 250px;
-    height: 250px;
-    bottom: -25px;
-    right: -25px;
+@media (max-width: $breakpoint-xl) {
+  /* Hide Right Sidebar on slightly smaller screens */
+  .right-sidebar {
+    display: none !important;
   }
 }
 
-/* Mobile (max-width: 767px) */
-@media (max-width: 767px) {
-  .login-page, .register-page, .verify-email-page {
-    /* Stack components and adjust padding */
-    padding: 1rem;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .theme-toggle {
-    top: 1rem !important;
-    right: 1rem !important;
-    width: 38px !important;
-    height: 38px !important;
-
-    svg {
-      width: 18px !important;
-      height: 18px !important;
-    }
-  }
-
-  .login-container, .register-container, .verify-email-container {
-    width: 100%;
-    max-width: 100%;
-    padding: 2rem 1.5rem;
-    border-radius: 16px;
+@media (max-width: $breakpoint-md) {
+  /* Hide Left Sidebar on Mobile, transform it into a drawer */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    z-index: 50;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
     
-    /* Remove borders on very small screens for a cleaner look */
-    @media (max-width: 480px) {
-      border: none;
-      box-shadow: none;
-      background: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
+    &.mobile-open {
+      left: 0;
     }
+  }
 
-    .login-header, .register-header, .verify-email-header {
-      h1 {
-        font-size: 1.5rem;
-      }
+  /* Overlay for when sidebar is open on mobile */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 
-      p {
-        font-size: 0.875rem;
+    &.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  // ... other rules
+
+  /* Header adjustments for mobile */
+  .header {
+    height: 60px;
+    padding: 0 1rem;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+
+    .mobile-menu-btn, .mobile-new-thread-btn {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .sidebar {
+    .mobile-close-btn {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .main-layout {
+    .content-wrapper {
+      .main-content {
+        padding: 0 1rem;
       }
     }
+  }
 
-    .login-form, .register-form {
-      gap: 1rem;
+  /* Make Prompt Grid 1 column on Mobile */
+  .prompt-grid {
+    grid-template-columns: 1fr !important;
+  }
 
-      .input-group {
-        input {
-          padding: 0.7rem 0.875rem;
-          font-size: 0.9rem;
+  /* Adjust Home Page Title Size */
+  .home-page {
+    padding-top: 2rem !important; // Bring it up on mobile
+    
+    h1 {
+      font-size: 1.75rem !important;
+    }
+    
+    p {
+      font-size: 0.95rem !important;
+    }
+  }
+
+  /* Adjust Search Bar actions for mobile */
+  .search-container {
+    .search-actions {
+      .search-actions-left {
+        .pro-toggle {
+          display: none; // Hide "Pro" badge on mobile search bar to save space
         }
-
-        label {
-          font-size: 0.8rem;
-        }
-      }
-
-      .forgot-password a {
-        font-size: 0.8rem;
-      }
-
-      .submit-btn {
-        padding: 0.75rem;
-        font-size: 0.95rem;
       }
     }
-
-    .google-btn {
-      padding: 0.75rem;
-      font-size: 0.95rem;
-    }
-
-    .divider {
-      margin: 1.25rem 0;
-      font-size: 0.8rem;
-    }
-
-    .register-link, .login-link {
-      margin-top: 1.25rem;
-      font-size: 0.8rem;
-    }
-  }
-
-  .verify-email-container {
-    padding: 2.5rem 1.5rem;
-
-    .verify-email-header {
-      .icon-success, .icon-error {
-        margin-bottom: 1rem;
-        
-        svg {
-          width: 60px;
-          height: 60px;
-        }
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      p {
-        font-size: 0.875rem;
-      }
-    }
-
-    .action-btn {
-      padding: 0.75rem;
-      font-size: 0.95rem;
-    }
-  }
-
-  .login-page::before, .register-page::before {
-    width: 250px;
-    height: 250px;
-    top: -20px;
-    left: -20px;
-    filter: blur(80px);
-  }
-
-  .login-page::after, .register-page::after {
-    width: 200px;
-    height: 200px;
-    bottom: -10px;
-    right: -10px;
-    filter: blur(80px);
-  }
-}
-
-/* Specific adjustment for very small screens */
-@media (max-width: 380px) {
-  .login-container, .register-container, .verify-email-container {
-    padding: 1.5rem 1rem;
   }
 }

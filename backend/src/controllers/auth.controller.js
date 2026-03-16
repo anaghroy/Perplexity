@@ -1,7 +1,13 @@
 import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../services/mail.service.js";
+import { OAuth2Client } from "google-auth-library";
 
+const client = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  "postmessage",
+);
 /**
  * @desc Register a new user
  * @route POST /api/auth/register
@@ -153,7 +159,7 @@ export async function getMe(req, res) {
  */
 export async function verifyEmail(req, res) {
   const { token } = req.query;
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -161,7 +167,9 @@ export async function verifyEmail(req, res) {
     const user = await userModel.findOne({ email: decoded.email });
 
     if (!user) {
-      return res.redirect(`${frontendUrl}/verify-email?status=error&message=UserNotFound`);
+      return res.redirect(
+        `${frontendUrl}/verify-email?status=error&message=UserNotFound`,
+      );
     }
 
     user.verified = true;
@@ -170,7 +178,9 @@ export async function verifyEmail(req, res) {
 
     return res.redirect(`${frontendUrl}/verify-email?status=success`);
   } catch (err) {
-    return res.redirect(`${frontendUrl}/verify-email?status=error&message=InvalidToken`);
+    return res.redirect(
+      `${frontendUrl}/verify-email?status=error&message=InvalidToken`,
+    );
   }
 }
 
@@ -197,6 +207,150 @@ export async function logout(req, res) {
       message: "Logout failed",
       success: false,
       err: error.message,
+    });
+  }
+}
+
+/**
+ * @desc Resend verification email
+ * @route POST /api/auth/resend-verification
+ * @access Public
+ * @body { email }
+ */
+export async function resendVerificationEmail(req, res) {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      message: "Email is required",
+      success: false,
+    });
+  }
+
+  try {
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    if (user.verified) {
+      return res.status(400).json({
+        message: "Email is already verified",
+        success: false,
+      });
+    }
+
+    const emailVerificationToken = jwt.sign(
+      {
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+    );
+
+    await sendEmail({
+      to: email,
+      subject: "Verify your Perplexity account!",
+      html: `
+                  <p>Hi ${user.username},</p>
+                  <p>You requested to resend the verification email. Please verify your email address by clicking the link below:</p>
+                  <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
+                  <p>If you did not request this, please ignore this email.</p>
+                  <p>Best regards,<br>The Perplexity Team</p>
+          `,
+    });
+
+    return res.status(200).json({
+      message: "Verification email resent successfully",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to resend verification email",
+      success: false,
+      err: error.message,
+    });
+  }
+}
+
+export async function googleAuth(req, res) {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      return res.status(400).json({
+        message: "Google token is required",
+      });
+    }
+
+    //Verify Google token
+    const { tokens } = await client.getToken(code);
+
+    if (!tokens.id_token) {
+      return res.status(400).json({
+        message: "Failed to retrieve id_token from Google",
+      });
+    }
+    const ticket = await client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+
+    const { email, name, picture, sub } = payload;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Google account email not found",
+      });
+    }
+
+    //Check if user exists
+    let user = await userModel.findOne({ email });
+
+    //If user does not exists
+    if (!user) {
+      user = await userModel.create({
+        username: name,
+        email,
+        provider: "google",
+        googleId: sub,
+        picture,
+        verified: true,
+      });
+    }
+
+    // JWT
+    const token = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "3d" },
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // true in production (HTTPS)
+      sameSite: "lax",
+      maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days;
+    });
+
+    return res.status(200).json({
+      message: "Google login successful",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Google Auth Error:", error);
+    return res.status(401).json({
+      message: "Google authentication failed",
     });
   }
 }
