@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import socket from "../services/socket";
 import {
   sendMessage,
@@ -19,6 +20,7 @@ import {
 
 const useChat = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const chats = useSelector(selectChats);
   const messages = useSelector(selectMessages);
@@ -37,6 +39,7 @@ const useChat = () => {
     dispatch(setActiveChatId(chatId));
     dispatch(fetchChatMessages(chatId));
     socket.emit("join:chat", chatId);  // rejoin room when switching chats
+    navigate("/");
   };
 
   const handleDeleteChat = (chatId) => {
@@ -49,6 +52,7 @@ const useChat = () => {
 
   const clearChat = () => {
     dispatch(clearChatAction());
+    navigate("/");
   };
 
   return {
