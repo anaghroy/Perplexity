@@ -1,1 +1,213 @@
-// Empty answer card styling
+.answer-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .answer-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .ai-icon {
+      width: 24px;
+      height: 24px;
+      background-color: #06b6d4;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .answer-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+  }
+
+  .answer-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+
+    p {
+      margin-bottom: 1rem;
+    }
+    
+    strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    code {
+      background: var(--hover-bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+
+    pre code {
+      display: block;
+      padding: 1rem;
+      background: #111;
+      color: #e5e7eb;
+      overflow-x: auto;
+    }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 2px;
+      animation: blink 1s step-end infinite;
+    }
+  }
+
+  .answer-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      border: 1px solid var(--border-color, transparent);
+      color: var(--text-secondary);
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: var(--hover-bg);
+        color: var(--text-primary);
+      }
+
+      &.active {
+        color: #06b6d4;
+        background: rgba(6, 182, 212, 0.1);
+        border-color: rgba(6, 182, 212, 0.2);
+      }
+    }
+  }
+}
+
+.sources-container {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  
+  .sources-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .sources-list {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+
+    &::-webkit-scrollbar {
+      height: 4px;   
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--hover-bg);
+      border-radius: 4px;
+    }
+
+    .source-card {
+      min-width: 160px;
+      max-width: 200px;
+      background: var(--card-bg, #1e1e24);
+      border: 1px solid var(--card-border, #2a2a32);
+      border-radius: 8px;
+      padding: 0.75rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      text-decoration: none;
+      transition: all 0.2s;
+      flex-shrink: 0;
+
+      &:hover {
+        background: var(--hover-bg);
+      }
+
+      .source-icon {
+        width: 24px;
+        height: 24px;
+        background: #2a2a32;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .default-favicon {
+          font-size: 12px;
+          font-weight: bold;
+          color: var(--text-secondary);
+        }
+      }
+
+      .source-info {
+        overflow: hidden;
+
+        .source-name {
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: var(--text-primary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          margin: 0;
+        }
+
+        .source-url-text {
+          font-size: 0.75rem;
+          color: var(--text-secondary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

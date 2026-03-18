@@ -1,6 +1,6 @@
-const ThreadItem = ({ title }) => {
+const ThreadItem = ({ title, onSelect }) => {
   return (
-    <button className="thread-item" title={title}>
+    <button className="thread-item" title={title} onClick={onSelect}>
       <span className="thread-title">{title}</span>
     </button>
   );

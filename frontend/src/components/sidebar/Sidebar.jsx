@@ -1,4 +1,5 @@
-import { NavLink, Link } from "react-router";
+import { NavLink, Link, useNavigate } from "react-router";
+import logo from "../../assets/images/perplexity-icon-light.png";
 import {
   Home,
   Compass,
@@ -13,8 +14,19 @@ import {
   X,
 } from "lucide-react";
 import ThreadList from "./ThreadList";
+import useChat from "../../hooks/useChat";
 
 const Sidebar = ({ isOpen, onClose }) => {
+  const { clearChat } = useChat();
+  const navigate = useNavigate();
+
+  const handleNewThread = () => {
+    clearChat();
+    navigate("/");
+    if (window.innerWidth < 768 && onClose) {
+      onClose();
+    }
+  };
   return (
     <aside className={`sidebar ${isOpen ? "mobile-open" : ""}`}>
       {/* Close button for Mobile only */}
@@ -42,16 +54,11 @@ const Sidebar = ({ isOpen, onClose }) => {
             style={{
               width: "32px",
               height: "32px",
-              backgroundColor: "#06b6d4",
-              color: "white",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "4px",
-              fontWeight: "bold",
             }}
           >
-            P
+            <img style={{ width: "100%" }} src={logo} alt="logo" />
           </div>
           <span className="brand-name">Perplexity Clone</span>
         </div>
@@ -82,7 +89,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         </nav>
 
         <div className="new-thread-container">
-          <button className="new-thread-btn">
+          <button className="new-thread-btn" onClick={handleNewThread}>
             <span>New Thread</span>
             <span className="shortcut">Ctrl I</span>
           </button>

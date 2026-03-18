@@ -18,10 +18,22 @@ export async function sendMessageController(req, res) {
         return res
           .status(404)
           .json({ success: false, message: "Chat not found" });
+
+      // Save user follow-up message
+      await messageModel.create({
+        chat: chat._id,
+        content: query,
+        role: "user",
+      });
+      res.status(200).json({
+        success: true,
+        chatId: chat._id,
+      });
     } else {
+      const title = await aiService.generateChatTitle(query);
       chat = await chatModel.create({
         user: userId,
-        title: query.slice(0, 50),
+        title,
       });
       await messageModel.create({
         chat: chat._id,
@@ -33,8 +45,8 @@ export async function sendMessageController(req, res) {
         success: true,
         chatId: chat._id,
       });
-      await waitForRoom(chat._id)
     }
+    await waitForRoom(chat._id);
     //Join socket room for this chat and stream AI response
     const socketRoom = `chat:${chat._id}`;
 

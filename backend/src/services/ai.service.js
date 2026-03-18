@@ -28,7 +28,15 @@ class AIService {
       throw error;
     }
   }
-
+  async generateChatTitle(query) {
+    try {
+      const prompt = `Generate a very short title (2-4 words) for a chat that starts with this message: "${query}". Reply with ONLY the title, no punctuation, no quotes.`;
+      const response = await models.gemini.invoke(this.#toMessages(prompt));
+      return response.content.trim();
+    } catch (error) {
+      return query.slice(0, 30);
+    }
+  }
   /**
    * AI Chat with Web Search
    */
