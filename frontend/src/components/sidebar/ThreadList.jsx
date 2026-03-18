@@ -14,7 +14,7 @@ const ThreadList = () => {
     <div className="thread-list">
       {chats.map((chat) => (
         <ThreadItem
-          key={chat.id}
+          key={chat._id}
           title={chat.title}
           onSelect={() => handleSelectChat(chat._id)}
           onDelete={() => handleDeleteChat(chat._id)}

@@ -2,6 +2,7 @@ import ReactMarkdown from "react-markdown";
 import { Copy, ThumbsUp, ThumbsDown, Share2, Check, Bookmark } from "lucide-react";
 import Sources from "./Sources";
 import { useState } from "react";
+import answerlogo from "../../assets/images/perplexity-icon-light.png";
 
 const AnswerCard = ({ content, sources, isStreaming, chatId, chatTitle }) => {
   const [copied, setCopied] = useState(false);
@@ -43,7 +44,9 @@ const AnswerCard = ({ content, sources, isStreaming, chatId, chatTitle }) => {
       <div className="answer-header">
         <div className="ai-icon">
           {/* Perplexity icon placeholder */}
-          <span className="icon-p">P</span>
+          <span className="icon-p">
+            <img src={answerlogo} alt="answerlogo" />
+          </span>
         </div>
         <span className="answer-title">Answer</span>
       </div>

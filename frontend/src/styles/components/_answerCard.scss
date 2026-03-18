@@ -12,14 +12,12 @@
     .ai-icon {
       width: 24px;
       height: 24px;
-      background-color: #06b6d4;
-      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 14px;
+      img{
+        width: 100%;
+      }
     }
 
     .answer-title {

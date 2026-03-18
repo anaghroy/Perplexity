@@ -1,4 +1,6 @@
 import { NavLink, Link, useNavigate } from "react-router";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import logo from "../../assets/images/perplexity-icon-light.png";
 import {
   Home,
@@ -15,10 +17,19 @@ import {
 } from "lucide-react";
 import ThreadList from "./ThreadList";
 import useChat from "../../hooks/useChat";
+import { logoutUser } from "../../features/auth/authSlice";
 
 const Sidebar = ({ isOpen, onClose }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { clearChat } = useChat();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/login");
+  };
 
   const handleNewThread = () => {
     clearChat();
@@ -109,14 +120,40 @@ const Sidebar = ({ isOpen, onClose }) => {
           <span>Download App</span>
         </button>
 
-        <div className="user-profile">
-          <img
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
-            alt="User avatar"
-            className="avatar"
-          />
-          <span className="user-name">Alex Doe</span>
-          <ChevronDown size={16} className="dropdown-icon" />
+        <div className="user-profile-container" style={{ position: "relative" }}>
+          {isMenuOpen && (
+            <div className="user-menu-popover">
+              <div className="menu-group">
+                <button className="menu-item">Preferences</button>
+                <button className="menu-item">Personalization</button>
+                <button className="menu-item">Shortcuts</button>
+                <button className="menu-item">Connections</button>
+                <button className="menu-item">All settings</button>
+              </div>
+              <div className="menu-divider"></div>
+              <div className="menu-group">
+                <button className="menu-item">Upgrade plan</button>
+                <button className="menu-item">Install apps</button>
+                <button className="menu-item">Appearance</button>
+                <button className="menu-item">Language</button>
+                <button className="menu-item">Help</button>
+              </div>
+              <div className="menu-divider"></div>
+              <div className="menu-group">
+                <button className="menu-item text-danger" onClick={handleLogout}>Logout</button>
+              </div>
+            </div>
+          )}
+
+          <div className="user-profile" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <img
+              src={user?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"}
+              alt="User avatar"
+              className="avatar"
+            />
+            <span className="user-name">{user?.username || "Alex Doe"}</span>
+            <ChevronDown size={16} className="dropdown-icon" />
+          </div>
         </div>
       </div>
     </aside>
