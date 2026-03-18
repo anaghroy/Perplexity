@@ -104,6 +104,14 @@ const chatSlice = createSlice({
       state.streamingText = "";
       state.isStreaming = false;
     },
+    injectMessage: (state, action) => {
+      state.messages.push({
+        _id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+        role: action.payload.role,
+        content: action.payload.content,
+        sources: action.payload.sources || null,
+      });
+    },
   },
   extraReducers: (builder) => {
     // sendMessage
@@ -156,6 +164,6 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setActiveChatId, appendChunk, streamingDone, clearChat } =
+export const { setActiveChatId, appendChunk, streamingDone, clearChat, injectMessage } =
   chatSlice.actions;
 export default chatSlice.reducer;
