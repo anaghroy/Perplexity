@@ -2,9 +2,10 @@ import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import { Copy, ThumbsUp, ThumbsDown, Share2, Check, Bookmark, Download } from "lucide-react";
 import Sources from "./Sources";
 import { useState } from "react";
-import answerlogo from "../../assets/images/perplexity-icon-light.png";
+import lightImage from "../../assets/images/perplexity-icon-light.png";
+import darkImage from "../../assets/images/perplexity-icon-dark.png";
 
-const AnswerCard = ({ content, sources, isStreaming, chatId, chatTitle }) => {
+const AnswerCard = ({ content, sources, isStreaming, chatId, chatTitle, isDarkMode }) => {
   const [copied, setCopied] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [isSaved, setIsSaved] = useState(() => {
@@ -67,7 +68,7 @@ const AnswerCard = ({ content, sources, isStreaming, chatId, chatTitle }) => {
         <div className="ai-icon">
           {/* Perplexity icon placeholder */}
           <span className="icon-p">
-            <img src={answerlogo} alt="answerlogo" />
+            <img src={isDarkMode ? darkImage : lightImage} alt="answerlogo" />
           </span>
         </div>
         <span className="answer-title">Answer</span>
