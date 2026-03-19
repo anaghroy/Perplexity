@@ -1,3 +1,110 @@
+// ─── Keyframe Animations ────────────────────────────────────────────────────
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes ping1 {
+  0%, 100% { transform: scale(1);   opacity: 0.6; }
+  50%       { transform: scale(1.5); opacity: 0;   }
+}
+
+@keyframes ping2 {
+  0%, 100% { transform: scale(1);   opacity: 0.4; }
+  50%       { transform: scale(1.9); opacity: 0;   }
+}
+
+@keyframes ping3 {
+  0%, 100% { transform: scale(1);   opacity: 0.25; }
+  50%       { transform: scale(2.4); opacity: 0;    }
+}
+
+@keyframes micPulse {
+  0%, 100% { transform: scale(1);    }
+  50%       { transform: scale(1.08); }
+}
+
+// ─── Listening Modal Overlay ─────────────────────────────────────────────────
+
+.listening-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  gap: 2rem;
+}
+
+.listening-ring-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  background: #06b6d4;
+
+  &.ring-1 { width: 120px; height: 120px; animation: ping1 1.6s ease-in-out infinite; }
+  &.ring-2 { width: 120px; height: 120px; animation: ping2 1.6s ease-in-out infinite 0.2s; }
+  &.ring-3 { width: 120px; height: 120px; animation: ping3 1.6s ease-in-out infinite 0.4s; }
+}
+
+.mic-circle {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #06b6d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: micPulse 1.6s ease-in-out infinite;
+  box-shadow: 0 0 0 6px rgba(6, 182, 212, 0.25);
+  z-index: 1;
+}
+
+.listening-label {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.stop-recording-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.35);
+    border-color: #ef4444;
+  }
+}
+
+// ─── Search Container ─────────────────────────────────────────────────────────
+
 .search-container {
   width: 100%;
   background-color: var(--card-bg);
@@ -13,101 +120,169 @@
   &:focus-within {
     border-color: var(--text-secondary);
   }
+}
 
-  .search-input {
-    width: 100%;
-    background: transparent;
-    border: none;
+// ─── Attached File Pill ───────────────────────────────────────────────────────
+
+.file-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  background-color: transparent;
+  transition: background-color 0.2s;
+
+  &--processing {
+    background-color: rgba(6, 182, 212, 0.05);
+  }
+
+  &__icon {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  &__name {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
     color: var(--text-primary);
-    font-size: 1.1rem;
-    resize: none;
-    outline: none;
-    min-height: 48px;
-    font-family: inherit;
-    padding: 0.5rem;
-    
-    &::placeholder {
-      color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__spinner {
+    color: #06b6d4;
+    animation: spin 1s linear infinite;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Hidden File Input ────────────────────────────────────────────────────────
+
+.file-input-hidden {
+  display: none;
+}
+
+// ─── Textarea ─────────────────────────────────────────────────────────────────
+
+.search-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  resize: none;
+  outline: none;
+  min-height: 48px;
+  font-family: inherit;
+  padding: 0.5rem;
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+}
+
+// ─── Actions Row ──────────────────────────────────────────────────────────────
+
+.search-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+
+  .search-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+// ─── Action Buttons ───────────────────────────────────────────────────────────
+
+.action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &.icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+
+    &:hover {
+      background-color: var(--hover-bg);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      color: var(--text-primary);
+      background-color: var(--hover-bg);
+    }
+
+    // Mic button turns cyan while recording
+    &.recording {
+      color: #06b6d4;
     }
   }
 
-  .search-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 0.5rem;
+  &.pro-toggle {
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background-color: var(--hover-bg);
+    font-size: 0.8rem;
+    font-weight: 500;
+    gap: 0.5rem;
 
-    .search-actions-left {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      .action-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-secondary);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-
-        &.icon-btn {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-
-          &:hover {
-            background-color: var(--hover-bg);
-            color: var(--text-primary);
-          }
-        }
-
-        &.pro-toggle {
-          padding: 0.4rem 0.75rem;
-          border-radius: 999px;
-          background-color: var(--hover-bg);
-          font-size: 0.8rem;
-          font-weight: 500;
-          gap: 0.5rem;
-
-          .pro-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: #06b6d4; // Cyan color
-          }
-
-          &:hover {
-            color: var(--text-primary);
-          }
-        }
-      }
+    .pro-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #06b6d4;
     }
 
-    .ask-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    &:hover {
+      color: var(--text-primary);
+    }
+
+    &.active {
+      color: var(--text-primary);
       background-color: var(--hover-bg);
-      color: var(--text-secondary);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: not-allowed;
-      transition: all 0.2s;
+    }
+  }
+}
 
-      &.active {
-        background-color: #06b6d4; // Cyan active state
-        color: white;
-        cursor: pointer;
+// ─── Submit Button ────────────────────────────────────────────────────────────
 
-        &:hover {
-          background-color: #0891b2;
-        }
-      }
+.ask-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--hover-bg);
+  color: var(--text-secondary);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: not-allowed;
+  transition: all 0.2s;
+
+  &.active {
+    background-color: #06b6d4;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0891b2;
     }
   }
 }

@@ -727,22 +727,15 @@ body {
 .discover-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow-y: auto;
-  padding: 2rem 15%;
+  padding: 2rem;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 @media (max-width: 1400px) {
   .discover-page {
-    padding: 2rem 5%;
+    padding: 2rem;
   }
-}
-.discover-page::-webkit-scrollbar {
-  display: none;
-}
-.discover-page {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 .discover-page .discover-header {
   margin-bottom: 2rem;
@@ -1184,6 +1177,138 @@ body {
   background-color: transparent;
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ping1 {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+@keyframes ping2 {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes ping3 {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.25;
+  }
+  50% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@keyframes micPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+.listening-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  gap: 2rem;
+}
+
+.listening-ring-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  background: #06b6d4;
+}
+.ring.ring-1 {
+  width: 120px;
+  height: 120px;
+  animation: ping1 1.6s ease-in-out infinite;
+}
+.ring.ring-2 {
+  width: 120px;
+  height: 120px;
+  animation: ping2 1.6s ease-in-out infinite 0.2s;
+}
+.ring.ring-3 {
+  width: 120px;
+  height: 120px;
+  animation: ping3 1.6s ease-in-out infinite 0.4s;
+}
+
+.mic-circle {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #06b6d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: micPulse 1.6s ease-in-out infinite;
+  box-shadow: 0 0 0 6px rgba(6, 182, 212, 0.25);
+  z-index: 1;
+}
+
+.listening-label {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.stop-recording-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.stop-recording-btn:hover {
+  background: rgba(239, 68, 68, 0.35);
+  border-color: #ef4444;
+}
+
 .search-container {
   width: 100%;
   background-color: var(--card-bg);
@@ -1199,7 +1324,45 @@ body {
 .search-container:focus-within {
   border-color: var(--text-secondary);
 }
-.search-container .search-input {
+
+.file-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+.file-pill--processing {
+  background-color: rgba(6, 182, 212, 0.05);
+}
+.file-pill__icon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.file-pill__name {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-pill__spinner {
+  color: #06b6d4;
+  animation: spin 1s linear infinite;
+  flex-shrink: 0;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.search-input {
   width: 100%;
   background: transparent;
   border: none;
@@ -1211,24 +1374,26 @@ body {
   font-family: inherit;
   padding: 0.5rem;
 }
-.search-container .search-input::-moz-placeholder {
+.search-input::-moz-placeholder {
   color: var(--text-secondary);
 }
-.search-container .search-input::placeholder {
+.search-input::placeholder {
   color: var(--text-secondary);
 }
-.search-container .search-actions {
+
+.search-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-top: 0.5rem;
 }
-.search-container .search-actions .search-actions-left {
+.search-actions .search-actions-left {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.search-container .search-actions .search-actions-left .action-btn {
+
+.action-btn {
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -1238,16 +1403,23 @@ body {
   justify-content: center;
   transition: all 0.2s;
 }
-.search-container .search-actions .search-actions-left .action-btn.icon-btn {
+.action-btn.icon-btn {
   width: 32px;
   height: 32px;
   border-radius: 50%;
 }
-.search-container .search-actions .search-actions-left .action-btn.icon-btn:hover {
+.action-btn.icon-btn:hover {
   background-color: var(--hover-bg);
   color: var(--text-primary);
 }
-.search-container .search-actions .search-actions-left .action-btn.pro-toggle {
+.action-btn.icon-btn.active {
+  color: var(--text-primary);
+  background-color: var(--hover-bg);
+}
+.action-btn.icon-btn.recording {
+  color: #06b6d4;
+}
+.action-btn.pro-toggle {
   padding: 0.4rem 0.75rem;
   border-radius: 999px;
   background-color: var(--hover-bg);
@@ -1255,16 +1427,21 @@ body {
   font-weight: 500;
   gap: 0.5rem;
 }
-.search-container .search-actions .search-actions-left .action-btn.pro-toggle .pro-dot {
+.action-btn.pro-toggle .pro-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background-color: #06b6d4;
 }
-.search-container .search-actions .search-actions-left .action-btn.pro-toggle:hover {
+.action-btn.pro-toggle:hover {
   color: var(--text-primary);
 }
-.search-container .search-actions .ask-btn {
+.action-btn.pro-toggle.active {
+  color: var(--text-primary);
+  background-color: var(--hover-bg);
+}
+
+.ask-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1278,12 +1455,12 @@ body {
   cursor: not-allowed;
   transition: all 0.2s;
 }
-.search-container .search-actions .ask-btn.active {
+.ask-btn.active {
   background-color: #06b6d4;
   color: white;
   cursor: pointer;
 }
-.search-container .search-actions .ask-btn.active:hover {
+.ask-btn.active:hover {
   background-color: #0891b2;
 }
 
