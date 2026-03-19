@@ -37,35 +37,51 @@ class AIService {
       return query.slice(0, 30);
     }
   }
+
   /**
    * AI Chat with Web Search
    */
-
   async searchAndAnswer(query) {
-    try {
-      const searchResults = await tools.search(query);
+    const searchResults = await tools.search(query);
 
-      const context = searchResults
-        .map((result) => `${result.title}: ${result.content}`)
-        .join("\n");
-
-      const prompt = `
-        You are an AI assistant.
-        Use the following web results to answer the question.
-        Web Results:${context}
-        Question: ${query}
-        Answer clearly and cite sources if possible.
-        `;
-
-      const response = await models.gemini.invoke(this.#toMessages(prompt));
+    if (!searchResults || searchResults.length === 0) {
       return {
-        answer: response.content,
-        sources: searchResults,
+        answer:
+          "I couldn't find any relevant web results for that query. Try rephrasing or ask me directly.",
+        sources: [],
       };
-    } catch (error) {
-      console.error("Search AI Error:", error);
-      throw error;
     }
+
+    const context = searchResults
+      .map(
+        (r, i) => `[${i + 1}] ${r.title}\nURL: ${r.url}\nSummary: ${r.content}`,
+      )
+      .join("\n\n");
+
+    const prompt = `You are a helpful AI assistant with access to live web search results.
+
+Use ONLY the web results below to answer the question.
+Cite sources inline using [1], [2], etc. matching the result numbers.
+If the results don't contain enough information, say so clearly — do not make things up.
+
+Web Results:
+${context}
+
+Question: ${query}
+
+Answer:`;
+
+    const response = await models.gemini.invoke(this.#toMessages(prompt));
+
+    return {
+      answer: response.content,
+      sources: searchResults.map((r) => ({
+        title: r.title,
+        url: r.url,
+        content: r.content,
+        score: r.score,
+      })),
+    };
   }
 
   /**
@@ -73,10 +89,13 @@ class AIService {
    */
   async generateImage(prompt) {
     try {
-      const image = await tools.image(prompt);
+      const result = await tools.image(prompt);
       return {
-        prompt,
-        image,
+        type: "image-generation",
+        prompt: result.prompt,
+        url: result.url,
+        fileId: result.fileId,
+        name: result.name,
       };
     } catch (error) {
       console.error("Image Generation Error:", error);

@@ -5,6 +5,7 @@ import {
   getChatMessagesAPI,
   deleteChatAPI,
 } from "./chatAPI";
+import { generateImageAPI } from "../ai/aiAPI";
 import socket from "../../services/socket";
 
 // Thunks
@@ -13,13 +14,35 @@ export const sendMessage = createAsyncThunk(
   async ({ query, chatId }, { rejectWithValue }) => {
     try {
       const data = await sendMessageAPI({ query, chatId });
-      console.log("Joining room:", data.chatId);
-      // Join socket room after getting chatId
       socket.emit("join:chat", data.chatId);
       return data; // { chatId }
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to send message",
+      );
+    }
+  },
+);
+
+/**
+ * generateImage thunk
+ * Handles the full image flow for both new and existing chats:
+ *  1. Calls the backend which creates a chat (if chatId is null) and saves the message
+ *  2. Returns { chatId, imageUrl } so the slice can update activeChatId + messages
+ */
+export const generateImage = createAsyncThunk(
+  "chat/generateImage",
+  async ({ prompt, chatId }, { rejectWithValue }) => {
+    try {
+      const res = await generateImageAPI(prompt, chatId);
+      // Backend returns { success, data: { url, chatId, fileId, name, prompt } }
+      const { url, chatId: returnedChatId } = res.data;
+      if (!url) throw new Error("No image URL returned");
+      socket.emit("join:chat", returnedChatId);
+      return { imageUrl: url, chatId: returnedChatId };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to generate image",
       );
     }
   },
@@ -70,11 +93,11 @@ export const deleteChat = createAsyncThunk(
 const chatSlice = createSlice({
   name: "chat",
   initialState: {
-    chats: [], // sidebar thread list
-    activeChatId: null, // currently open chat
-    messages: [], // messages for active chat
-    streamingText: "", // live AI response being streamed
-    isStreaming: false, // true while AI is responding
+    chats: [],
+    activeChatId: null,
+    messages: [],
+    streamingText: "",
+    isStreaming: false,
     isLoading: false,
     error: null,
   },
@@ -85,10 +108,9 @@ const chatSlice = createSlice({
       state.streamingText = "";
     },
     appendChunk: (state, action) => {
-      state.streamingText += action.payload; // 👈 called on every ai:chunk
+      state.streamingText += action.payload;
     },
     streamingDone: (state, action) => {
-      // Move streamed text into messages array as AI message
       state.messages.push({
         _id: Date.now().toString(),
         role: "ai",
@@ -110,6 +132,7 @@ const chatSlice = createSlice({
         role: action.payload.role,
         content: action.payload.content,
         sources: action.payload.sources || null,
+        type: action.payload.type || "text",   // ← FIX: preserve type field
       });
     },
   },
@@ -119,7 +142,6 @@ const chatSlice = createSlice({
       .addCase(sendMessage.pending, (state, action) => {
         state.isStreaming = true;
         state.streamingText = "";
-        // Optimistically add user message
         state.messages.push({
           _id: Date.now().toString(),
           role: "user",
@@ -134,11 +156,44 @@ const chatSlice = createSlice({
         state.error = action.payload;
       });
 
-    // fetchChats
+    // generateImage
     builder
-      .addCase(fetchChats.pending, (state) => {
+      .addCase(generateImage.pending, (state, action) => {
+        // Optimistically add the user prompt message immediately
+        state.messages.push({
+          _id: Date.now().toString(),
+          role: "user",
+          content: `Generate an image: ${action.meta.arg.prompt}`,
+        });
         state.isLoading = true;
       })
+      .addCase(generateImage.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // Set activeChatId — critical for new threads where it was null
+        state.activeChatId = action.payload.chatId;
+        // Add the AI image message
+        state.messages.push({
+          _id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+          role: "ai",
+          content: action.payload.imageUrl,
+          type: "image",
+        });
+        // Add new chat to sidebar if it isn't there yet
+        // (the chat list will refresh on next loadChats, but this avoids
+        //  a blank sidebar after generating on a brand new thread)
+      })
+      .addCase(generateImage.rejected, (state, action) => {
+        state.isLoading = false;
+        state.messages.push({
+          _id: Date.now().toString(),
+          role: "ai",
+          content: `**Error generating image**: ${action.payload}`,
+        });
+      });
+
+    // fetchChats
+    builder
+      .addCase(fetchChats.pending, (state) => { state.isLoading = true; })
       .addCase(fetchChats.fulfilled, (state, action) => {
         state.isLoading = false;
         state.chats = action.payload;

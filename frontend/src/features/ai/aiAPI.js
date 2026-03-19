@@ -18,7 +18,7 @@ export const summarizeDocumentAPI = async (pdfFile) => {
   return response.data;
 };
 
-export const generateImageAPI = async (prompt) => {
-  const response = await axiosInstance.post("/api/ai/image", { prompt });
+export const generateImageAPI = async (prompt, chatId) => {
+  const response = await axiosInstance.post("/api/ai/image", { prompt, chatId });
   return response.data;
 };

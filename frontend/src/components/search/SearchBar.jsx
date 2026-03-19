@@ -1,29 +1,14 @@
-import {
-  Search,
-  Paperclip,
-  Mic,
-  Image as ImageIcon,
-  ArrowRight,
-  MicOff,
-  FileText,
-  Loader2,
-} from "lucide-react";
+import { Search, Paperclip, Mic, Image as ImageIcon, ArrowRight, MicOff, FileText, Loader2 } from "lucide-react";
 import { useState, useRef } from "react";
 import useChat from "../../hooks/useChat";
 import { useDispatch } from "react-redux";
 import { injectMessage } from "../../features/chat/chatSlice";
-import {
-  transcribeAudioAPI,
-  summarizeDocumentAPI,
-  generateImageAPI,
-} from "../../features/ai/aiAPI";
+import { transcribeAudioAPI, summarizeDocumentAPI } from "../../features/ai/aiAPI";
+import { generateImage } from "../../features/chat/chatSlice";
 
 /* ─── Floating Listening Modal ─────────────────────────────────────────────── */
 const ListeningModal = ({ onStop }) => (
-  <div
-    className="listening-overlay"
-    onClick={(e) => e.target === e.currentTarget && onStop()}
-  >
+  <div className="listening-overlay" onClick={(e) => e.target === e.currentTarget && onStop()}>
     <div className="listening-ring-wrap">
       <div className="ring ring-3" />
       <div className="ring ring-2" />
@@ -43,7 +28,7 @@ const ListeningModal = ({ onStop }) => (
 /* ─── SearchBar ─────────────────────────────────────────────────────────────── */
 const SearchBar = () => {
   const [query, setQuery] = useState("");
-  const { handleSendMessage } = useChat();
+  const { handleSendMessage, activeChatId } = useChat();
   const dispatch = useDispatch();
 
   const [activeModel, setActiveModel] = useState("text");
@@ -57,40 +42,18 @@ const SearchBar = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!query || typeof query !== "string" || !query.trim() || isProcessing)
-      return;
+    if (!query || typeof query !== "string" || !query.trim() || isProcessing) return;
 
     if (activeModel === "image") {
+      // generateImage thunk handles everything:
+      // - adds user message optimistically
+      // - calls backend (creates chat if needed, uploads to ImageKit, saves message)
+      // - sets activeChatId even on a brand new thread
+      // - adds AI image message to Redux state on success
       setIsProcessing(true);
-      dispatch(
-        injectMessage({ role: "user", content: `Generate an image: ${query}` }),
-      );
-      try {
-        const res = await generateImageAPI(query);
-        const imageUrlData = res.data;
-        const imageUrl =
-          typeof imageUrlData === "string"
-            ? imageUrlData
-            : imageUrlData.url ||
-              imageUrlData.image ||
-              JSON.stringify(imageUrlData);
-        dispatch(
-          injectMessage({
-            role: "ai",
-            content: `![Generated Image](${imageUrl})`,
-          }),
-        );
-      } catch (err) {
-        dispatch(
-          injectMessage({
-            role: "ai",
-            content: `**Error generating image**: ${err.message}`,
-          }),
-        );
-      } finally {
-        setIsProcessing(false);
-        setQuery("");
-      }
+      await dispatch(generateImage({ prompt: query, chatId: activeChatId }));
+      setIsProcessing(false);
+      setQuery("");
     } else {
       handleSendMessage(query);
       setQuery("");
@@ -110,35 +73,13 @@ const SearchBar = () => {
       const summaryText =
         typeof summaryData === "string"
           ? summaryData
-          : summaryData.summary ||
-            summaryData.text ||
-            JSON.stringify(summaryData);
+          : summaryData.summary || summaryData.text || JSON.stringify(summaryData);
 
-      dispatch(
-        injectMessage({
-          role: "user",
-          content: `Summarize document: ${file.name}`,
-        }),
-      );
-      dispatch(
-        injectMessage({
-          role: "ai",
-          content: `**Document Summary (${file.name}):**\n\n${summaryText}`,
-        }),
-      );
+      dispatch(injectMessage({ role: "user", content: `Summarize document: ${file.name}` }));
+      dispatch(injectMessage({ role: "ai", content: `**Document Summary (${file.name}):**\n\n${summaryText}` }));
     } catch (err) {
-      dispatch(
-        injectMessage({
-          role: "user",
-          content: `Summarize document: ${file.name}`,
-        }),
-      );
-      dispatch(
-        injectMessage({
-          role: "ai",
-          content: `**Error summarizing document**: ${err.message}`,
-        }),
-      );
+      dispatch(injectMessage({ role: "user", content: `Summarize document: ${file.name}` }));
+      dispatch(injectMessage({ role: "ai", content: `**Error summarizing document**: ${err.message}` }));
     } finally {
       setIsProcessing(false);
       setAttachedFile(null);
@@ -177,13 +118,11 @@ const SearchBar = () => {
           const transcribedText =
             typeof transcribedData === "string"
               ? transcribedData
-              : transcribedData.transcript ||
-                transcribedData.text ||
-                JSON.stringify(transcribedData);
+              : transcribedData.transcript
+              || transcribedData.text
+              || JSON.stringify(transcribedData);
 
-          setQuery((prev) =>
-            prev ? prev + " " + transcribedText : transcribedText,
-          );
+          setQuery((prev) => (prev ? prev + " " + transcribedText : transcribedText));
         } catch (err) {
           console.error("Transcription error:", err);
         } finally {
@@ -204,14 +143,10 @@ const SearchBar = () => {
 
       <form className="search-container" onSubmit={handleSubmit}>
         {attachedFile && (
-          <div
-            className={`file-pill${isProcessing ? " file-pill--processing" : ""}`}
-          >
+          <div className={`file-pill${isProcessing ? " file-pill--processing" : ""}`}>
             <FileText size={16} className="file-pill__icon" />
             <span className="file-pill__name">{attachedFile.name}</span>
-            {isProcessing && (
-              <Loader2 size={14} className="file-pill__spinner" />
-            )}
+            {isProcessing && <Loader2 size={14} className="file-pill__spinner" />}
           </div>
         )}
 
@@ -266,9 +201,7 @@ const SearchBar = () => {
               type="button"
               className={`action-btn pro-toggle${activeModel === "image" ? " active" : ""}`}
               title="Image Generation Mode"
-              onClick={() =>
-                setActiveModel(activeModel === "image" ? "text" : "image")
-              }
+              onClick={() => setActiveModel(activeModel === "image" ? "text" : "image")}
             >
               <ImageIcon size={14} /> Image <span className="pro-dot" />
             </button>
@@ -277,17 +210,9 @@ const SearchBar = () => {
           <button
             type="submit"
             className={`ask-btn${typeof query === "string" && query.trim() && !isProcessing ? " active" : ""}`}
-            disabled={
-              typeof query !== "string" || !query.trim() || isProcessing
-            }
+            disabled={typeof query !== "string" || !query.trim() || isProcessing}
           >
-            <span>
-              {isProcessing
-                ? "Processing..."
-                : activeModel === "image"
-                  ? "Generate"
-                  : "Ask AI"}
-            </span>
+            <span>{isProcessing ? "Processing..." : activeModel === "image" ? "Generate" : "Ask AI"}</span>
             <ArrowRight size={16} />
           </button>
         </div>
