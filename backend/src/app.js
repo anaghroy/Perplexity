@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
 
 import authRouter from "./routes/auth.routes.js";
 import aiRoutes from "./routes/ai.routes.js";
@@ -10,6 +11,7 @@ const app = express();
 //Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("./public"));
 app.use(cookieParser());
 app.use(
   cors({
@@ -26,4 +28,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/ai", aiRoutes);
 app.use("/api/chat", chatRouters)
 
+/**Universal method */
+app.use("*name", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "/public/index.html"));
+});
 export default app;
