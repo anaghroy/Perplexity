@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice";
@@ -37,6 +39,7 @@ const Register = () => {
   // UI state for conditional rendering and feedback
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [resendStatus, setResendStatus] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     return () => dispatch(clearError());
@@ -155,16 +158,28 @@ const Register = () => {
 
               <div className="input-group">
                 <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  disabled={loading}
-                />
+                <div className="password-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <button type="submit" className="submit-btn" disabled={loading}>

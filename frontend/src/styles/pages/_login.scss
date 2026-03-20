@@ -132,6 +132,34 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
           }
         }
+
+        .password-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+
+          input {
+            width: 100%;
+            padding-right: 2.75rem; // make room for the icon
+          }
+
+          .password-toggle {
+            position: absolute;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            padding: 0;
+            transition: color 0.2s;
+
+            &:hover {
+              color: var(--text-primary);
+            }
+          }
+        }
       }
 
       .forgot-password {

@@ -14,7 +14,7 @@ transporter
     console.log("Email transporter is ready to send emails");
   })
   .catch((err) => {
-    console.error("Email transporter verification failed:", err);
+    console.error("Email transporter verification failed:", err.message);
   });
 
 export async function sendEmail({ to, subject, html, text }) {
@@ -23,7 +23,7 @@ export async function sendEmail({ to, subject, html, text }) {
   }
 
   const info = await transporter.sendMail({
-    from: `"Perplexity Clone" <${process.env.MAIL_USER}>`,
+    from: `"Perplexity Clone" <${process.env.GOOGLE_USER}>`,
     to,
     subject,
     html,

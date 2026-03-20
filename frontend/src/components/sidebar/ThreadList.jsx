@@ -4,7 +4,7 @@ import useChat from "../../hooks/useChat";
 
 
 const ThreadList = () => {
-  const { chats, handleSelectChat, handleDeleteChat, loadChats } = useChat();
+  const { chats, activeChatId, handleSelectChat, handleDeleteChat, loadChats } = useChat();
 
   useEffect(() => {
     loadChats();
@@ -16,6 +16,7 @@ const ThreadList = () => {
         <ThreadItem
           key={chat._id}
           title={chat.title}
+          isActive={activeChatId === chat._id}
           onSelect={() => handleSelectChat(chat._id)}
           onDelete={() => handleDeleteChat(chat._id)}
         />

@@ -237,6 +237,30 @@ body {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
+.register-page .register-container .register-form .input-group .password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.register-page .register-container .register-form .input-group .password-wrapper input {
+  width: 100%;
+  padding-right: 2.75rem;
+}
+.register-page .register-container .register-form .input-group .password-wrapper .password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+.register-page .register-container .register-form .input-group .password-wrapper .password-toggle:hover {
+  color: var(--text-primary);
+}
 .register-page .register-container .register-form .submit-btn {
   display: flex;
   justify-content: center;
@@ -476,6 +500,30 @@ body {
 .login-page .login-container .login-form .input-group input:focus {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.login-page .login-container .login-form .input-group .password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.login-page .login-container .login-form .input-group .password-wrapper input {
+  width: 100%;
+  padding-right: 2.75rem;
+}
+.login-page .login-container .login-form .input-group .password-wrapper .password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+.login-page .login-container .login-form .input-group .password-wrapper .password-toggle:hover {
+  color: var(--text-primary);
 }
 .login-page .login-container .login-form .forgot-password {
   text-align: right;
@@ -1029,6 +1077,27 @@ body {
   opacity: 1;
   pointer-events: auto;
 }
+.sidebar .history-section .thread-item-wrapper.active {
+  background-color: var(--hover-bg);
+}
+.sidebar .history-section .thread-item-wrapper.active .thread-item {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+.sidebar .history-section .thread-item-wrapper.active .thread-delete-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sidebar .history-section .thread-item-wrapper.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background-color: var(--accent-color, #06b6d4);
+}
 .sidebar .history-section .thread-item-wrapper .thread-item {
   flex: 1;
   display: flex;
@@ -1410,14 +1479,14 @@ body {
 }
 .action-btn.icon-btn:hover {
   background-color: var(--hover-bg);
-  color: var(--text-primary);
+  color: #028da6;
 }
 .action-btn.icon-btn.active {
   color: var(--text-primary);
   background-color: var(--hover-bg);
 }
 .action-btn.icon-btn.recording {
-  color: #06b6d4;
+  color: #0682d4;
 }
 .action-btn.pro-toggle {
   padding: 0.4rem 0.75rem;

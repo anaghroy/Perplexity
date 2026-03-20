@@ -29,16 +29,22 @@ const useChat = () => {
   const activeChatId = useSelector(selectActiveChatId);
   const isLoading = useSelector(selectChatLoading);
 
-  // Listeners moved to App.jsx to prevent duplicate events  
+  const handleSendMessage = async (query) => {
+    const result = await dispatch(sendMessage({ query, chatId: activeChatId }));
 
-  const handleSendMessage = (query) => {
-    dispatch(sendMessage({ query, chatId: activeChatId }));
+    const newChatId = result?.payload?.chatId;
+    if (newChatId && newChatId !== activeChatId) {
+      dispatch(setActiveChatId(newChatId));
+      socket.emit("join:chat", newChatId);
+    }
+
+    dispatch(fetchChats());
   };
 
   const handleSelectChat = (chatId) => {
     dispatch(setActiveChatId(chatId));
     dispatch(fetchChatMessages(chatId));
-    socket.emit("join:chat", chatId);  // rejoin room when switching chats
+    socket.emit("join:chat", chatId); // rejoin room when switching chats
     navigate("/");
   };
 

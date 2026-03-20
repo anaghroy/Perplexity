@@ -1,13 +1,13 @@
 import { Trash2 } from "lucide-react";
 
-const ThreadItem = ({ title, onSelect, onDelete }) => {
+const ThreadItem = ({ title, isActive, onSelect, onDelete }) => {
   const handleDelete = (e) => {
     e.stopPropagation();
     onDelete();
   };
 
   return (
-    <div className="thread-item-wrapper" onClick={onSelect}>
+    <div className={`thread-item-wrapper${isActive ? " active" : ""}`}onClick={onSelect}>
       <button className="thread-item" title={title}>
         <span className="thread-title">{title}</span>
       </button>

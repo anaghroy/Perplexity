@@ -1,4 +1,4 @@
-import { Search, Paperclip, Mic, Image as ImageIcon, ArrowRight, MicOff, FileText, Loader2 } from "lucide-react";
+import { Search, Paperclip, Mic, Image as ImageIcon, ArrowRight, MicOff, FileText, Loader2, Globe } from "lucide-react";
 import { useState, useRef } from "react";
 import useChat from "../../hooks/useChat";
 import { useDispatch } from "react-redux";
@@ -167,7 +167,7 @@ const SearchBar = () => {
               title="Chat Mode"
               onClick={() => setActiveModel("text")}
             >
-              <Search size={18} />
+              <Globe  size={18} />
             </button>
 
             <button

@@ -14,14 +14,11 @@
 /*layouts*/
 @use "../styles/layouts/sidebar";
 @use "../styles/layouts/header";
-@use "../styles/layouts/chat";
 @use "../styles/layouts/search";
 @use "../styles/layouts/rightSidebar";
 @use "../styles/layouts/grid";
 
 /*Components*/
-@use "../styles/components/buttons";
-@use "../styles/components/cards";
 @use "../styles/components/promptCard";
 @use "../styles/components/chatMessage";
 @use "../styles/components/answerCard";
