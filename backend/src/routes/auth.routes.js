@@ -7,6 +7,8 @@ import {
   logout,
   resendVerificationEmail,
   googleAuth,
+  debug,
+  
 } from "../controllers/auth.controller.js";
 import {
   registerValidator,
@@ -24,7 +26,7 @@ const authRouter = Router();
  */
 
 authRouter.post("/register", registerValidator, register);
-
+authRouter.get("/debug", debug);
 /**
  * @route POST /api/auth/login
  * @desc Login user and return JWT token

@@ -8,7 +8,39 @@ const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_SECRET,
   "postmessage",
 );
-
+/**
+ * @desc Temporary debug route — checks env vars and sends a test email
+ * @route GET /api/auth/debug
+ * @access Public — REMOVE THIS FUNCTION AND ROUTE AFTER DEBUGGING
+ */
+export async function debug(req, res) {
+  const results = {
+    env: {
+      BACKEND_URL: process.env.FRONTEND_URL || "❌ NOT SET",
+      FRONTEND_URL: process.env.FRONTEND_URL || "❌ NOT SET",
+      JWT_SECRET: process.env.JWT_SECRET ? "✅ set" : "❌ NOT SET",
+      GOOGLE_USER: process.env.GOOGLE_USER || "❌ NOT SET",
+      MAIL_PASS: process.env.MAIL_PASS ? "✅ set" : "❌ NOT SET",
+      NODE_ENV: process.env.NODE_ENV || "❌ NOT SET",
+    },
+    emailTest: null,
+    emailError: null,
+  };
+ 
+  try {
+    await sendEmail({
+      to: process.env.GOOGLE_USER,
+      subject: "Render Debug Test",
+      html: "<p>If you see this, email is working on Render ✅</p>",
+    });
+    results.emailTest = "✅ Email sent successfully";
+  } catch (err) {
+    results.emailTest = "❌ Email failed";
+    results.emailError = err.message;
+  }
+ 
+  return res.status(200).json(results);
+}
 /**
  * @desc Register a new user
  * @route POST /api/auth/register
