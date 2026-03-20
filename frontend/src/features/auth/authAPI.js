@@ -1,7 +1,6 @@
 import axiosInstance from "../../services/axiosInstance.js";
 
 export const registerAPI = async ({ username, email, password }) => {
-   console.log("Registering with:", { username, email, password })
   const response = await axiosInstance.post("/api/auth/register", {
     username,
     email,

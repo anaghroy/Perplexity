@@ -8,59 +8,68 @@ const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_SECRET,
   "postmessage",
 );
+
 /**
  * @desc Register a new user
  * @route POST /api/auth/register
  * @access Public
  * @body { username, email, password }
  */
-
 export async function register(req, res) {
-  const { username, email, password } = req.body;
+  try {
+    const { username, email, password } = req.body;
 
-  const isUserAlreadyExists = await userModel.findOne({
-    $or: [{ username }, { email }],
-  });
+    const isUserAlreadyExists = await userModel.findOne({
+      $or: [{ username }, { email }],
+    });
 
-  /**Checking */
-  if (isUserAlreadyExists) {
-    return res.status(400).json({
-      message: "User with this email or username already exists",
+    if (isUserAlreadyExists) {
+      return res.status(400).json({
+        message: "User with this email or username already exists",
+        success: false,
+        err: "User already exists",
+      });
+    }
+
+    const user = await userModel.create({ username, email, password });
+
+    const emailVerificationToken = jwt.sign(
+      { email: user.email },
+      process.env.JWT_SECRET,
+    );
+
+    const backendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+
+    await sendEmail({
+      to: email,
+      subject: "Welcome to Perplexity!",
+      html: `
+        <p>Hi ${username},</p>
+        <p>Thank you for registering at <strong>Perplexity</strong>. We're excited to have you on board!</p>
+        <p>Please verify your email address by clicking the link below:</p>
+        <a href="${backendUrl}/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
+        <p>If you did not create an account, please ignore this email.</p>
+        <p>Best regards,<br>The Perplexity Team</p>
+      `,
+    });
+
+    res.status(201).json({
+      message: "User registered successfully",
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Register error:", error);
+    return res.status(500).json({
+      message: "Registration failed. Please try again.",
       success: false,
-      err: "User already exists",
+      err: error.message,
     });
   }
-
-  const user = await userModel.create({ username, email, password });
-
-  const emailVerificationToken = jwt.sign(
-    {
-      email: user.email,
-    },
-    process.env.JWT_SECRET,
-  );
-
-  await sendEmail({
-    to: email,
-    subject: "Welcome to Perplexity!",
-    html: `
-                <p>Hi ${username},</p>
-                <p>Thank you for registering at <strong>Perplexity</strong>. We're excited to have you on board!</p>
-                <p>Please verify your email address by clicking the link below:</p>
-                <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
-                <p>If you did not create an account, please ignore this email.</p>
-                <p>Best regards,<br>The Perplexity Team</p>
-        `,
-  });
-  res.status(201).json({
-    message: "User registered successfully",
-    success: true,
-    user: {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-    },
-  });
 }
 
 /**
@@ -81,6 +90,7 @@ export async function login(req, res) {
       err: "User not found",
     });
   }
+
   const isPasswordMatch = await user.comparePassword(password);
 
   if (!isPasswordMatch) {
@@ -100,19 +110,16 @@ export async function login(req, res) {
   }
 
   const token = jwt.sign(
-    {
-      id: user._id,
-      username: user.username,
-    },
+    { id: user._id, username: user.username },
     process.env.JWT_SECRET,
     { expiresIn: "3d" },
   );
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false, // true in production (HTTPS)
-    sameSite: "lax",
-    maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days;
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
+    maxAge: 3 * 24 * 60 * 60 * 1000,
   });
 
   res.status(200).json({
@@ -163,7 +170,6 @@ export async function verifyEmail(req, res) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const user = await userModel.findOne({ email: decoded.email });
 
     if (!user) {
@@ -173,7 +179,6 @@ export async function verifyEmail(req, res) {
     }
 
     user.verified = true;
-
     await user.save();
 
     return res.redirect(`${frontendUrl}/verify-email?status=success`);
@@ -189,13 +194,12 @@ export async function verifyEmail(req, res) {
  * @route POST /api/auth/logout
  * @access Private
  */
-
 export async function logout(req, res) {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false, // must match login cookie
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
     return res.status(200).json({
@@ -245,22 +249,22 @@ export async function resendVerificationEmail(req, res) {
     }
 
     const emailVerificationToken = jwt.sign(
-      {
-        email: user.email,
-      },
+      { email: user.email },
       process.env.JWT_SECRET,
     );
+
+    const backendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
     await sendEmail({
       to: email,
       subject: "Verify your Perplexity account!",
       html: `
-                  <p>Hi ${user.username},</p>
-                  <p>You requested to resend the verification email. Please verify your email address by clicking the link below:</p>
-                  <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
-                  <p>If you did not request this, please ignore this email.</p>
-                  <p>Best regards,<br>The Perplexity Team</p>
-          `,
+        <p>Hi ${user.username},</p>
+        <p>You requested to resend the verification email. Please verify your email address by clicking the link below:</p>
+        <a href="${backendUrl}/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>
+        <p>If you did not request this, please ignore this email.</p>
+        <p>Best regards,<br>The Perplexity Team</p>
+      `,
     });
 
     return res.status(200).json({
@@ -268,6 +272,7 @@ export async function resendVerificationEmail(req, res) {
       success: true,
     });
   } catch (error) {
+    console.error("Resend verification error:", error);
     return res.status(500).json({
       message: "Failed to resend verification email",
       success: false,
@@ -281,12 +286,9 @@ export async function googleAuth(req, res) {
     const { code } = req.body;
 
     if (!code) {
-      return res.status(400).json({
-        message: "Google token is required",
-      });
+      return res.status(400).json({ message: "Google token is required" });
     }
 
-    //Verify Google token
     const { tokens } = await client.getToken(code);
 
     if (!tokens.id_token) {
@@ -294,24 +296,20 @@ export async function googleAuth(req, res) {
         message: "Failed to retrieve id_token from Google",
       });
     }
+
     const ticket = await client.verifyIdToken({
       idToken: tokens.id_token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     const payload = ticket.getPayload();
-
     const { email, name, picture, sub } = payload;
 
     if (!email) {
-      return res.status(400).json({
-        message: "Google account email not found",
-      });
+      return res.status(400).json({ message: "Google account email not found" });
     }
 
-    //Check if user exists
     let user = await userModel.findOne({ email });
 
-    //If user does not exists
     if (!user) {
       user = await userModel.create({
         username: name,
@@ -323,20 +321,17 @@ export async function googleAuth(req, res) {
       });
     }
 
-    // JWT
     const token = jwt.sign(
-      {
-        id: user._id,
-        username: user.username,
-      },
+      { id: user._id, username: user.username },
       process.env.JWT_SECRET,
       { expiresIn: "3d" },
     );
+
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // true in production (HTTPS)
-      sameSite: "lax",
-      maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days;
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -349,8 +344,6 @@ export async function googleAuth(req, res) {
     });
   } catch (error) {
     console.error("Google Auth Error:", error);
-    return res.status(401).json({
-      message: "Google authentication failed",
-    });
+    return res.status(401).json({ message: "Google authentication failed" });
   }
 }
