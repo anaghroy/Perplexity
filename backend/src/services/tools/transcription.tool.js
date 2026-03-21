@@ -6,13 +6,12 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-export async function transcribeAudio(filePath) {
+export async function transcribeAudio(buffer, originalname, mimetype) {
   try {
-    const stream = fs.createReadStream(filePath);
-    stream.path = filePath;
+    const file = new File([buffer], originalname, { type: mimetype });
 
     const transcription = await groq.audio.transcriptions.create({
-      file: stream,
+      file,
       model: "whisper-large-v3",
       response_format: "json",
     });

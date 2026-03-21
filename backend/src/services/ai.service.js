@@ -106,9 +106,9 @@ Answer:`;
   /**
    * Audio Transcription
    */
-  async transcribeAudio(filePath) {
+  async transcribeAudio(buffer, originalname, mimetype) {
     try {
-      const transcript = await tools.transcription(filePath);
+      const transcript = await tools.transcription(buffer, originalname, mimetype);
       return { type: "audio-transcription", transcript };
     } catch (error) {
       console.error("Audio Transcription error:", error);
@@ -119,9 +119,9 @@ Answer:`;
   /**
    * PDF Document Summarization
    */
-  async summarizeDocument(filePath) {
+  async summarizeDocument(buffer) {
     try {
-      const text = await tools.pdf(filePath);
+      const text = await tools.pdf(buffer);
       const prompt = `
       Summarize the following document clearly in bullet points: ${text}
       `;

@@ -1,4 +1,3 @@
-import fs from "fs";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
@@ -8,10 +7,9 @@ const pdfParse = require("pdf-parse");
  * Extract text from PDF file
  */
 
-export async function extractPdfText(filePath) {
+export async function extractPdfText(buffer) {
   try {
-    const dataBuffer = fs.readFileSync(filePath);
-    const data = await pdfParse(dataBuffer);
+    const data = await pdfParse(buffer);
 
     return data.text;
   } catch (error) {

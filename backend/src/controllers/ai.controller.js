@@ -61,7 +61,7 @@ export async function generateImageController(req, res) {
         fileId: result.fileId,
         name: result.name,
         prompt,
-        chatId: resolvedChatId,   // ← returned so frontend sets activeChatId
+        chatId: resolvedChatId, // ← returned so frontend sets activeChatId
       },
     });
   } catch (error) {
@@ -76,9 +76,15 @@ export async function generateImageController(req, res) {
 export async function transcribeAudioController(req, res) {
   try {
     if (!req.file) {
-      return res.status(400).json({ success: false, message: "No audio file uploaded" });
+      return res
+        .status(400)
+        .json({ success: false, message: "No audio file uploaded" });
     }
-    const result = await aiService.transcribeAudio(req.file.path);
+    const result = await aiService.transcribeAudio(
+      req.file.buffer,
+      req.file.originalname,
+      req.file.mimetype,
+    );
     res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.error("Audio Controller Error:", error);
@@ -91,7 +97,10 @@ export async function transcribeAudioController(req, res) {
  */
 export async function summarizeDocumentController(req, res) {
   try {
-    const result = await aiService.summarizeDocument(req.file.path);
+    const result = await aiService.summarizeDocument(
+      req.file.buffer,
+      req.file.originalname,
+    );
     res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.error("Document Controller Error:", error);
