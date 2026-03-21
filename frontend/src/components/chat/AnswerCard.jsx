@@ -83,7 +83,14 @@ const AnswerCard = ({ content, sources, isStreaming, chatId, chatTitle }) => {
           {/* Perplexity icon placeholder */}
           <span className="icon-p">
             <img
-            style={{ width: "28px", height: "28px", objectFit: "contain" }}
+              style={{
+                width: "28px",
+                height: "28px",
+                objectFit: "contain",
+                background: theme === "light" ? "#0f172a" : "#f1f5f9",
+                borderRadius: "6px",
+                padding: "2px",
+              }}
               src={theme === "dark" ? darkImage : lightImage}
               alt="answerLogo"
             />

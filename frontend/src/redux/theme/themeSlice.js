@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialTheme = localStorage.getItem("app-theme") || "dark";
+document.documentElement.setAttribute("data-theme", initialTheme);
 
 const themeSlice = createSlice({
   name: "theme",
