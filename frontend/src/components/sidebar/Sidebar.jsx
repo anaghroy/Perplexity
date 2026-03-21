@@ -51,17 +51,9 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       <div className="sidebar-top">
         <div className="brand">
-          <div
-            className="brand-logo bg-cyan-500 text-white rounded font-bold flex items-center justify-center"
-            style={{
-              width: "32px",
-              height: "32px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
+          <div className="brand-logo">
             <img
-              style={{ width: "100%" }}
+              style={{ width: "32px", height: "32px", objectFit: "contain" }}
               src={theme === "dark" ? darkImage : lightImage}
               alt="logo"
             />
