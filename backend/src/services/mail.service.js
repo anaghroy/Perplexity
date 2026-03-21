@@ -1,9 +1,9 @@
-import * as Brevo from "@getbrevo/brevo";
+import { TransactionalEmailsApi, TransactionalEmailsApiApiKeys, SendSmtpEmail } from "@getbrevo/brevo";
 
-const apiInstance = new Brevo.TransactionalEmailsApi();
+const apiInstance = new TransactionalEmailsApi();
 
 apiInstance.setApiKey(
-  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  TransactionalEmailsApiApiKeys.apiKey,
   process.env.BREVO_API_KEY
 );
 
@@ -12,7 +12,7 @@ export async function sendEmail({ to, subject, html, text }) {
     throw new Error("sendEmail: 'to' and 'subject' are required");
   }
 
-  const sendSmtpEmail = new Brevo.SendSmtpEmail();
+  const sendSmtpEmail = new SendSmtpEmail();
 
   sendSmtpEmail.sender = {
     name: "Perplexity Clone",
