@@ -1,20 +1,10 @@
 import { NavLink, Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import logo from "../../assets/images/perplexity-icon-light.png";
-import {
-  Home,
-  Compass,
-  Library,
-  Plus,
-  ChevronDown,
-  MessageSquare,
-  Settings,
-  Smartphone,
-  Hexagon,
-  Info,
-  X,
-} from "lucide-react";
+import lightImage from "../../assets/images/perplexity-icon-light.png";
+import darkImage from "../../assets/images/perplexity-icon-dark.png";
+
+import { Home, Compass, Library, ChevronDown, X } from "lucide-react";
 import ThreadList from "./ThreadList";
 import useChat from "../../hooks/useChat";
 import { logoutUser } from "../../features/auth/authSlice";
@@ -25,6 +15,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const theme = useSelector((state) => state.theme.theme);
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -69,7 +60,11 @@ const Sidebar = ({ isOpen, onClose }) => {
               alignItems: "center",
             }}
           >
-            <img style={{ width: "100%" }} src={logo} alt="logo" />
+            <img
+              style={{ width: "100%" }}
+              src={theme === "dark" ? darkImage : lightImage}
+              alt="logo"
+            />
           </div>
           <span className="brand-name">Perplexity Clone</span>
         </div>
@@ -120,7 +115,10 @@ const Sidebar = ({ isOpen, onClose }) => {
           <span>Download App</span>
         </button>
 
-        <div className="user-profile-container" style={{ position: "relative" }}>
+        <div
+          className="user-profile-container"
+          style={{ position: "relative" }}
+        >
           {isMenuOpen && (
             <div className="user-menu-popover">
               <div className="menu-group">
@@ -140,14 +138,25 @@ const Sidebar = ({ isOpen, onClose }) => {
               </div>
               <div className="menu-divider"></div>
               <div className="menu-group">
-                <button className="menu-item text-danger" onClick={handleLogout}>Logout</button>
+                <button
+                  className="menu-item text-danger"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
               </div>
             </div>
           )}
 
-          <div className="user-profile" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <div
+            className="user-profile"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
             <img
-              src={user?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"}
+              src={
+                user?.avatar ||
+                "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+              }
               alt="User avatar"
               className="avatar"
             />
