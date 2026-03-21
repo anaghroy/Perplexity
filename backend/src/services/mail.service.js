@@ -1,35 +1,30 @@
-import nodemailer from "nodemailer";
+import * as Brevo from "@getbrevo/brevo";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GOOGLE_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+const apiInstance = new Brevo.TransactionalEmailsApi();
 
-transporter
-  .verify()
-  .then(() => {
-    console.log("Email transporter is ready to send emails");
-  })
-  .catch((err) => {
-    console.error("Email transporter verification failed:", err.message);
-  });
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
 export async function sendEmail({ to, subject, html, text }) {
   if (!to || !subject) {
     throw new Error("sendEmail: 'to' and 'subject' are required");
   }
 
-  const info = await transporter.sendMail({
-    from: `"Perplexity Clone" <${process.env.GOOGLE_USER}>`,
-    to,
-    subject,
-    html,
-    text,
-  });
+  const sendSmtpEmail = new Brevo.SendSmtpEmail();
 
-  console.log("📧 Email sent to:", to, "| Message ID:", info.messageId);
-  return info;
+  sendSmtpEmail.sender = {
+    name: "Perplexity Clone",
+    email: process.env.BREVO_SENDER_EMAIL,
+  };
+  sendSmtpEmail.to = [{ email: to }];
+  sendSmtpEmail.subject = subject;
+  sendSmtpEmail.htmlContent = html;
+  if (text) sendSmtpEmail.textContent = text;
+
+  const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+
+  console.log("📧 Email sent to:", to, "| Message ID:", data.body.messageId);
+  return data;
 }
