@@ -118,5 +118,5 @@ npm run dev
 
 ## 🎥 Live Project Demo
 
-![Live Demo](https://via.placeholder.com/800x450.png?text=Video+Demo+Coming+Soon)
+![Live Demo]([https://via.placeholder.com/800x450.png?text=Video+Demo+Coming+Soon](https://github.com/anaghroy/Perplexity/releases/download/v1.0.0/output_progressive_362b1a36-b3a6-4bf1-ac80-a18db7cfca98.mp4))
 
